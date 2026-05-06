@@ -1,0 +1,51 @@
+# Clash Verge / Mihomo profile for neon-proxy-one
+# VLESS + Reality, server in GCP us-central1
+# Updates here propagate to Clash Verge via subscription URL
+
+mixed-port: 7890
+mode: rule
+log-level: info
+allow-lan: false
+ipv6: false
+external-controller: 127.0.0.1:9090
+
+dns:
+  enable: true
+  ipv6: false
+  default-nameserver:
+    - 223.5.5.5
+    - 1.1.1.1
+  nameserver:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+
+proxies:
+  - name: "neon-proxy-one"
+    type: vless
+    server: 34.55.223.211
+    port: 443
+    uuid: 304c51f8-5e21-4eea-bdc0-4ebeb6cb811d
+    network: tcp
+    udp: false
+    tls: true
+    flow: xtls-rprx-vision
+    servername: www.microsoft.com
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: 1Ft_BCjUX8mvTZvdZXPgcUCipjNXVjzUnWfi9WjTLl8
+      short-id: ce5ca552f4edc872
+
+proxy-groups:
+  - name: "neon"
+    type: select
+    proxies:
+      - neon-proxy-one
+      - DIRECT
+
+rules:
+  # Локалка — мимо
+  - GEOIP,LAN,DIRECT
+  # Россия — напрямую (рунет не проксируем)
+  - GEOIP,RU,DIRECT
+  # Всё остальное — через ротонду
+  - MATCH,neon
