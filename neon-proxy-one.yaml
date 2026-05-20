@@ -1,6 +1,14 @@
-# Clash Verge / Mihomo profile for neon-proxy-one
-# VLESS + Reality, server in GCP us-central1
-# Updates here propagate to Clash Verge via subscription URL
+# ╔════════════════════════════════════════════════════════════════════╗
+# ║  neon-proxy-one — NETRUNNER EDITION                                ║
+# ║  Clash Verge / Mihomo profile • VLESS + Reality к GCP us-central1  ║
+# ║                                                                    ║
+# ║  Рулсеты от Loyalsoldier (apache-2.0) — обновляются раз в сутки    ║
+# ║  Реклама/трекеры → REJECT                                          ║
+# ║  RU-инфра (банки/госуслуги/маркетплейсы) → DIRECT                  ║
+# ║  Всё остальное → через ротонду                                     ║
+# ║                                                                    ║
+# ║  ✨ Лейн & Пинг для бро • 20.05.2026                                ║
+# ╚════════════════════════════════════════════════════════════════════╝
 
 mixed-port: 7890
 mode: rule
@@ -12,6 +20,12 @@ external-controller: 127.0.0.1:9090
 dns:
   enable: true
   ipv6: false
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter:
+    - '*.lan'
+    - '*.local'
+    - localhost.*
   default-nameserver:
     - 223.5.5.5
     - 1.1.1.1
@@ -36,16 +50,161 @@ proxies:
       short-id: ce5ca552f4edc872
 
 proxy-groups:
-  - name: "neon"
+  - name: "🌐 Главная"
     type: select
     proxies:
       - neon-proxy-one
       - DIRECT
 
+  - name: "🛡 Блок"
+    type: select
+    proxies:
+      - REJECT
+      - DIRECT
+
+# ═══════════════════════════════════════════════════════════════════════
+# RULE PROVIDERS — внешние списки от Loyalsoldier
+# Качаются при первом запуске, кэшируются локально, обновляются раз в день
+# ═══════════════════════════════════════════════════════════════════════
+rule-providers:
+  # Реклама и трекеры (огромный список — заметная разница в браузере)
+  reject:
+    type: http
+    behavior: domain
+    url: https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/reject.yaml
+    path: ./ruleset/loyalsoldier/reject.yaml
+    interval: 86400
+
+  # Приватные/локальные домены
+  private:
+    type: http
+    behavior: domain
+    url: https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/private.yaml
+    path: ./ruleset/loyalsoldier/private.yaml
+    interval: 86400
+
+  # LAN CIDR подсети
+  lancidr:
+    type: http
+    behavior: ipcidr
+    url: https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/lancidr.yaml
+    path: ./ruleset/loyalsoldier/lancidr.yaml
+    interval: 86400
+
+  # Глобально-заблочные сайты (для нас — через прокси)
+  proxy-list:
+    type: http
+    behavior: domain
+    url: https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/proxy.yaml
+    path: ./ruleset/loyalsoldier/proxy.yaml
+    interval: 86400
+
+  # GFW-список (то, что обычно блокируют — тоже через прокси)
+  gfw:
+    type: http
+    behavior: domain
+    url: https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/gfw.yaml
+    path: ./ruleset/loyalsoldier/gfw.yaml
+    interval: 86400
+
+  # Telegram CIDR — через прокси (в РФ замедлен)
+  telegramcidr:
+    type: http
+    behavior: ipcidr
+    url: https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/telegramcidr.yaml
+    path: ./ruleset/loyalsoldier/telegramcidr.yaml
+    interval: 86400
+
+  # Google services — через прокси (YouTube/Maps быстрее с US IP)
+  google:
+    type: http
+    behavior: domain
+    url: https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/google.yaml
+    path: ./ruleset/loyalsoldier/google.yaml
+    interval: 86400
+
+# ═══════════════════════════════════════════════════════════════════════
+# RULES — выполняются по порядку, первое совпадение побеждает
+# ═══════════════════════════════════════════════════════════════════════
 rules:
-  # Локалка — мимо
+  # ─── Локалка и системные адреса ───
+  - RULE-SET,private,DIRECT
+  - RULE-SET,lancidr,DIRECT
   - GEOIP,LAN,DIRECT
-  # Россия — напрямую (рунет не проксируем)
+
+  # ─── Реклама и трекеры — в чёрный ящик ───
+  - RULE-SET,reject,🛡 Блок
+
+  # ─── RU-инфра (банки, госуслуги, маркетплейсы) — напрямую ───
+  # Банки
+  - DOMAIN-SUFFIX,sberbank.ru,DIRECT
+  - DOMAIN-SUFFIX,sber.ru,DIRECT
+  - DOMAIN-SUFFIX,tinkoff.ru,DIRECT
+  - DOMAIN-SUFFIX,vtb.ru,DIRECT
+  - DOMAIN-SUFFIX,alfabank.ru,DIRECT
+  - DOMAIN-SUFFIX,raiffeisen.ru,DIRECT
+  - DOMAIN-SUFFIX,gazprombank.ru,DIRECT
+  - DOMAIN-SUFFIX,psbank.ru,DIRECT
+  - DOMAIN-SUFFIX,otpbank.ru,DIRECT
+  - DOMAIN-SUFFIX,rosbank.ru,DIRECT
+  - DOMAIN-SUFFIX,mkb.ru,DIRECT
+  - DOMAIN-SUFFIX,open.ru,DIRECT
+  # Госуслуги и налоги
+  - DOMAIN-SUFFIX,gosuslugi.ru,DIRECT
+  - DOMAIN-SUFFIX,nalog.gov.ru,DIRECT
+  - DOMAIN-SUFFIX,nalog.ru,DIRECT
+  - DOMAIN-SUFFIX,mos.ru,DIRECT
+  - DOMAIN-SUFFIX,gov.ru,DIRECT
+  # Маркетплейсы и доставки
+  - DOMAIN-SUFFIX,wildberries.ru,DIRECT
+  - DOMAIN-SUFFIX,wb.ru,DIRECT
+  - DOMAIN-SUFFIX,ozon.ru,DIRECT
+  - DOMAIN-SUFFIX,ozon.travel,DIRECT
+  - DOMAIN-SUFFIX,avito.ru,DIRECT
+  - DOMAIN-SUFFIX,sbermarket.ru,DIRECT
+  - DOMAIN-SUFFIX,sbermegamarket.ru,DIRECT
+  - DOMAIN-SUFFIX,megamarket.ru,DIRECT
+  - DOMAIN-SUFFIX,delivery-club.ru,DIRECT
+  - DOMAIN-SUFFIX,samokat.ru,DIRECT
+  - DOMAIN-SUFFIX,citilink.ru,DIRECT
+  - DOMAIN-SUFFIX,dns-shop.ru,DIRECT
+  - DOMAIN-SUFFIX,mvideo.ru,DIRECT
+  - DOMAIN-SUFFIX,eldorado.ru,DIRECT
+  # Yandex / VK / Mail.ru — экосистемы
+  - DOMAIN-SUFFIX,yandex.ru,DIRECT
+  - DOMAIN-SUFFIX,yandex.net,DIRECT
+  - DOMAIN-SUFFIX,yandex.com,DIRECT
+  - DOMAIN-SUFFIX,ya.ru,DIRECT
+  - DOMAIN-SUFFIX,yastatic.net,DIRECT
+  - DOMAIN-SUFFIX,kinopoisk.ru,DIRECT
+  - DOMAIN-SUFFIX,vk.com,DIRECT
+  - DOMAIN-SUFFIX,vk.ru,DIRECT
+  - DOMAIN-SUFFIX,vkuserlive.com,DIRECT
+  - DOMAIN-SUFFIX,mail.ru,DIRECT
+  - DOMAIN-SUFFIX,my.com,DIRECT
+  # Карты, погода, транспорт
+  - DOMAIN-SUFFIX,2gis.ru,DIRECT
+  - DOMAIN-SUFFIX,2gis.com,DIRECT
+  - DOMAIN-SUFFIX,gismeteo.ru,DIRECT
+  - DOMAIN-SUFFIX,rzd.ru,DIRECT
+  - DOMAIN-SUFFIX,aeroflot.ru,DIRECT
+  - DOMAIN-SUFFIX,pochta.ru,DIRECT
+  # Стриминги / видео RU
+  - DOMAIN-SUFFIX,kion.ru,DIRECT
+  - DOMAIN-SUFFIX,ivi.ru,DIRECT
+  - DOMAIN-SUFFIX,okko.tv,DIRECT
+  - DOMAIN-SUFFIX,more.tv,DIRECT
+  - DOMAIN-SUFFIX,premier.one,DIRECT
+  - DOMAIN-SUFFIX,start.ru,DIRECT
+
+  # ─── Россия по GeoIP — fallback для всей RU-инфры ───
   - GEOIP,RU,DIRECT
-  # Всё остальное — через ротонду
-  - MATCH,neon
+
+  # ─── Через ротонду — известные блочные/нужные ───
+  - RULE-SET,gfw,🌐 Главная
+  - RULE-SET,proxy-list,🌐 Главная
+  - RULE-SET,telegramcidr,🌐 Главная
+  - RULE-SET,google,🌐 Главная
+
+  # ─── Всё остальное — через ротонду ───
+  - MATCH,🌐 Главная
