@@ -67,7 +67,6 @@ proxy-groups:
 # Качаются при первом запуске, кэшируются локально, обновляются раз в день
 # ═══════════════════════════════════════════════════════════════════════
 rule-providers:
-  # Реклама и трекеры (огромный список — заметная разница в браузере)
   reject:
     type: http
     behavior: domain
@@ -75,7 +74,6 @@ rule-providers:
     path: ./ruleset/loyalsoldier/reject.yaml
     interval: 86400
 
-  # Приватные/локальные домены
   private:
     type: http
     behavior: domain
@@ -83,7 +81,6 @@ rule-providers:
     path: ./ruleset/loyalsoldier/private.yaml
     interval: 86400
 
-  # LAN CIDR подсети
   lancidr:
     type: http
     behavior: ipcidr
@@ -91,7 +88,6 @@ rule-providers:
     path: ./ruleset/loyalsoldier/lancidr.yaml
     interval: 86400
 
-  # Глобально-заблочные сайты (для нас — через прокси)
   proxy-list:
     type: http
     behavior: domain
@@ -99,7 +95,6 @@ rule-providers:
     path: ./ruleset/loyalsoldier/proxy.yaml
     interval: 86400
 
-  # GFW-список (то, что обычно блокируют — тоже через прокси)
   gfw:
     type: http
     behavior: domain
@@ -107,7 +102,6 @@ rule-providers:
     path: ./ruleset/loyalsoldier/gfw.yaml
     interval: 86400
 
-  # Telegram CIDR — через прокси (в РФ замедлен)
   telegramcidr:
     type: http
     behavior: ipcidr
@@ -115,7 +109,6 @@ rule-providers:
     path: ./ruleset/loyalsoldier/telegramcidr.yaml
     interval: 86400
 
-  # Google services — через прокси (YouTube/Maps быстрее с US IP)
   google:
     type: http
     behavior: domain
@@ -134,6 +127,11 @@ rules:
 
   # ─── Реклама и трекеры — в чёрный ящик ───
   - RULE-SET,reject,🛡 Блок
+
+  # ─── Bootstrap fix: CDN для rule-providers всегда напрямую ───
+  # (иначе Mihomo не может скачать рулсеты если прокси временно лежит)
+  - DOMAIN-SUFFIX,raw.githubusercontent.com,DIRECT
+  - DOMAIN-SUFFIX,cdn.jsdelivr.net,DIRECT
 
   # ─── RU-инфра (банки, госуслуги, маркетплейсы) — напрямую ───
   # Банки
