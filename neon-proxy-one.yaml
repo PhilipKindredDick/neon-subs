@@ -42,7 +42,7 @@ proxies:
     network: tcp
     udp: false
     tls: true
-    # flow: xtls-rprx-vision   ← отключено для диагностики
+    flow: xtls-rprx-vision
     servername: www.microsoft.com
     client-fingerprint: chrome
     reality-opts:
@@ -124,6 +124,9 @@ rules:
   - RULE-SET,private,DIRECT
   - RULE-SET,lancidr,DIRECT
   - GEOIP,LAN,DIRECT
+
+  # ─── Proxy server IP — всегда напрямую, иначе TUN routing loop! ───
+  - IP-CIDR,34.55.223.211/32,DIRECT,no-resolve
 
   # ─── Реклама и трекеры — в чёрный ящик ───
   - RULE-SET,reject,🛡 Блок
