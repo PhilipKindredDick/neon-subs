@@ -42,7 +42,7 @@ proxies:
     network: tcp
     udp: false
     tls: true
-    flow: xtls-rprx-vision
+    # flow: xtls-rprx-vision   ← отключено для диагностики
     servername: www.microsoft.com
     client-fingerprint: chrome
     reality-opts:
