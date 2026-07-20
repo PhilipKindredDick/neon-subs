@@ -1,13 +1,15 @@
 # ╔════════════════════════════════════════════════════════════════════╗
-# ║  neon-proxy-one — NETRUNNER EDITION                                ║
+# ║  neon-proxy-one — NETRUNNER EDITION v2                             ║
 # ║  Clash Verge / Mihomo profile • VLESS + Reality к GCP us-central1  ║
 # ║                                                                    ║
-# ║  Рулсеты от Loyalsoldier (apache-2.0) — обновляются раз в сутки    ║
+# ║  Рулсеты от Loyalsoldier (GPL-3.0) — обновляются раз в сутки       ║
 # ║  Реклама/трекеры → REJECT                                          ║
 # ║  RU-инфра (банки/госуслуги/маркетплейсы) → DIRECT                  ║
 # ║  Всё остальное → через ротонду                                     ║
 # ║                                                                    ║
-# ║  ✨ Лейн & Пинг для бро • 20.05.2026                                ║
+# ║  ✨ Лейн & Пинг для бро • 20.05.2026 (v2 fix 20.07.2026)           ║
+# ║  v2 fix: Loyalsoldier сменил формат .yaml → .txt, добавлен         ║
+# ║  format: text; jsdelivr CDN как основа (устойчивее из РФ)          ║
 # ╚════════════════════════════════════════════════════════════════════╝
 
 mixed-port: 7890
@@ -63,80 +65,87 @@ proxy-groups:
       - DIRECT
 
 # ═══════════════════════════════════════════════════════════════════════
-# RULE PROVIDERS — внешние списки от Loyalsoldier
-# Качаются при первом запуске, кэшируются локально, обновляются раз в день
+# RULE PROVIDERS — Loyalsoldier через jsdelivr CDN (устойчивее из РФ,
+# ~12ч задержка обновлений против raw.githubusercontent.com, но зато
+# без 404/EOF и без прыжков через прокси при cold-start)
 # ═══════════════════════════════════════════════════════════════════════
 rule-providers:
+  # Реклама и трекеры
   reject:
     type: http
     behavior: domain
-    url: https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/reject.yaml
+    format: text
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/reject.txt
     path: ./ruleset/loyalsoldier/reject.yaml
     interval: 86400
 
+  # Приватные/локальные домены
   private:
     type: http
     behavior: domain
-    url: https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/private.yaml
+    format: text
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/private.txt
     path: ./ruleset/loyalsoldier/private.yaml
     interval: 86400
 
+  # LAN CIDR
   lancidr:
     type: http
     behavior: ipcidr
-    url: https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/lancidr.yaml
+    format: text
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/lancidr.txt
     path: ./ruleset/loyalsoldier/lancidr.yaml
     interval: 86400
 
+  # Глобально блочные (для нас — через прокси)
   proxy-list:
     type: http
     behavior: domain
-    url: https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/proxy.yaml
+    format: text
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/proxy.txt
     path: ./ruleset/loyalsoldier/proxy.yaml
     interval: 86400
 
+  # GFW-список
   gfw:
     type: http
     behavior: domain
-    url: https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/gfw.yaml
+    format: text
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/gfw.txt
     path: ./ruleset/loyalsoldier/gfw.yaml
     interval: 86400
 
+  # Telegram CIDR
   telegramcidr:
     type: http
     behavior: ipcidr
-    url: https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/telegramcidr.yaml
+    format: text
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/telegramcidr.txt
     path: ./ruleset/loyalsoldier/telegramcidr.yaml
     interval: 86400
 
+  # Google services
   google:
     type: http
     behavior: domain
-    url: https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/google.yaml
+    format: text
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/google.txt
     path: ./ruleset/loyalsoldier/google.yaml
     interval: 86400
 
 # ═══════════════════════════════════════════════════════════════════════
-# RULES — выполняются по порядку, первое совпадение побеждает
+# RULES — по порядку, первое совпадение побеждает
 # ═══════════════════════════════════════════════════════════════════════
 rules:
-  # ─── Локалка и системные адреса ───
+  # ─── Локалка/системные ───
   - RULE-SET,private,DIRECT
   - RULE-SET,lancidr,DIRECT
   - GEOIP,LAN,DIRECT
 
-  # ─── Proxy server IP — всегда напрямую, иначе TUN routing loop! ───
-  - IP-CIDR,34.55.223.211/32,DIRECT,no-resolve
-
-  # ─── Реклама и трекеры — в чёрный ящик ───
+  # ─── Реклама → в чёрный ящик ───
   - RULE-SET,reject,🛡 Блок
 
-  # ─── Bootstrap fix: CDN для rule-providers всегда напрямую ───
-  # (иначе Mihomo не может скачать рулсеты если прокси временно лежит)
-  - DOMAIN-SUFFIX,raw.githubusercontent.com,DIRECT
-  - DOMAIN-SUFFIX,cdn.jsdelivr.net,DIRECT
-
-  # ─── RU-инфра (банки, госуслуги, маркетплейсы) — напрямую ───
+  # ─── RU-инфра (банки/госуслуги/маркетплейсы) — напрямую ───
   # Банки
   - DOMAIN-SUFFIX,sberbank.ru,DIRECT
   - DOMAIN-SUFFIX,sber.ru,DIRECT
@@ -150,13 +159,13 @@ rules:
   - DOMAIN-SUFFIX,rosbank.ru,DIRECT
   - DOMAIN-SUFFIX,mkb.ru,DIRECT
   - DOMAIN-SUFFIX,open.ru,DIRECT
-  # Госуслуги и налоги
+  # Госуслуги/налоги
   - DOMAIN-SUFFIX,gosuslugi.ru,DIRECT
   - DOMAIN-SUFFIX,nalog.gov.ru,DIRECT
   - DOMAIN-SUFFIX,nalog.ru,DIRECT
   - DOMAIN-SUFFIX,mos.ru,DIRECT
   - DOMAIN-SUFFIX,gov.ru,DIRECT
-  # Маркетплейсы и доставки
+  # Маркетплейсы/доставки
   - DOMAIN-SUFFIX,wildberries.ru,DIRECT
   - DOMAIN-SUFFIX,wb.ru,DIRECT
   - DOMAIN-SUFFIX,ozon.ru,DIRECT
@@ -171,7 +180,7 @@ rules:
   - DOMAIN-SUFFIX,dns-shop.ru,DIRECT
   - DOMAIN-SUFFIX,mvideo.ru,DIRECT
   - DOMAIN-SUFFIX,eldorado.ru,DIRECT
-  # Yandex / VK / Mail.ru — экосистемы
+  # Yandex / VK / Mail.ru
   - DOMAIN-SUFFIX,yandex.ru,DIRECT
   - DOMAIN-SUFFIX,yandex.net,DIRECT
   - DOMAIN-SUFFIX,yandex.com,DIRECT
@@ -183,14 +192,14 @@ rules:
   - DOMAIN-SUFFIX,vkuserlive.com,DIRECT
   - DOMAIN-SUFFIX,mail.ru,DIRECT
   - DOMAIN-SUFFIX,my.com,DIRECT
-  # Карты, погода, транспорт
+  # Карты/погода/транспорт
   - DOMAIN-SUFFIX,2gis.ru,DIRECT
   - DOMAIN-SUFFIX,2gis.com,DIRECT
   - DOMAIN-SUFFIX,gismeteo.ru,DIRECT
   - DOMAIN-SUFFIX,rzd.ru,DIRECT
   - DOMAIN-SUFFIX,aeroflot.ru,DIRECT
   - DOMAIN-SUFFIX,pochta.ru,DIRECT
-  # Стриминги / видео RU
+  # RU-стриминги
   - DOMAIN-SUFFIX,kion.ru,DIRECT
   - DOMAIN-SUFFIX,ivi.ru,DIRECT
   - DOMAIN-SUFFIX,okko.tv,DIRECT
@@ -198,10 +207,10 @@ rules:
   - DOMAIN-SUFFIX,premier.one,DIRECT
   - DOMAIN-SUFFIX,start.ru,DIRECT
 
-  # ─── Россия по GeoIP — fallback для всей RU-инфры ───
+  # ─── Россия по GeoIP — fallback ───
   - GEOIP,RU,DIRECT
 
-  # ─── Через ротонду — известные блочные/нужные ───
+  # ─── Известные блочные/нужные — через ротонду ───
   - RULE-SET,gfw,🌐 Главная
   - RULE-SET,proxy-list,🌐 Главная
   - RULE-SET,telegramcidr,🌐 Главная
