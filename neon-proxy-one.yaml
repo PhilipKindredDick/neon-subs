@@ -1,5 +1,5 @@
 # ╔════════════════════════════════════════════════════════════════════╗
-# ║  neon-proxy-one — NETRUNNER EDITION v2                             ║
+# ║  neon-proxy-one — NETRUNNER EDITION v3                             ║
 # ║  Clash Verge / Mihomo profile • VLESS + Reality к GCP us-central1  ║
 # ║                                                                    ║
 # ║  Рулсеты от Loyalsoldier (GPL-3.0) — обновляются раз в сутки       ║
@@ -7,9 +7,9 @@
 # ║  RU-инфра (банки/госуслуги/маркетплейсы) → DIRECT                  ║
 # ║  Всё остальное → через ротонду                                     ║
 # ║                                                                    ║
-# ║  ✨ Лейн & Пинг для бро • 20.05.2026 (v2 fix 20.07.2026)           ║
-# ║  v2 fix: Loyalsoldier сменил формат .yaml → .txt, добавлен         ║
-# ║  format: text; jsdelivr CDN как основа (устойчивее из РФ)          ║
+# ║  ✨ Лейн & Пинг для бро • v3 fix SNI 20.07.2026                    ║
+# ║  v3: SNI microsoft -> icloud (уходим из-под возможного DPI)        ║
+# ║  v2: rule-providers .yaml -> .txt через jsdelivr                   ║
 # ╚════════════════════════════════════════════════════════════════════╝
 
 mixed-port: 7890
@@ -45,7 +45,7 @@ proxies:
     udp: false
     tls: true
     flow: xtls-rprx-vision
-    servername: www.microsoft.com
+    servername: www.icloud.com
     client-fingerprint: chrome
     reality-opts:
       public-key: 1Ft_BCjUX8mvTZvdZXPgcUCipjNXVjzUnWfi9WjTLl8
@@ -65,12 +65,9 @@ proxy-groups:
       - DIRECT
 
 # ═══════════════════════════════════════════════════════════════════════
-# RULE PROVIDERS — Loyalsoldier через jsdelivr CDN (устойчивее из РФ,
-# ~12ч задержка обновлений против raw.githubusercontent.com, но зато
-# без 404/EOF и без прыжков через прокси при cold-start)
+# RULE PROVIDERS — Loyalsoldier через jsdelivr CDN
 # ═══════════════════════════════════════════════════════════════════════
 rule-providers:
-  # Реклама и трекеры
   reject:
     type: http
     behavior: domain
@@ -79,7 +76,6 @@ rule-providers:
     path: ./ruleset/loyalsoldier/reject.yaml
     interval: 86400
 
-  # Приватные/локальные домены
   private:
     type: http
     behavior: domain
@@ -88,7 +84,6 @@ rule-providers:
     path: ./ruleset/loyalsoldier/private.yaml
     interval: 86400
 
-  # LAN CIDR
   lancidr:
     type: http
     behavior: ipcidr
@@ -97,7 +92,6 @@ rule-providers:
     path: ./ruleset/loyalsoldier/lancidr.yaml
     interval: 86400
 
-  # Глобально блочные (для нас — через прокси)
   proxy-list:
     type: http
     behavior: domain
@@ -106,7 +100,6 @@ rule-providers:
     path: ./ruleset/loyalsoldier/proxy.yaml
     interval: 86400
 
-  # GFW-список
   gfw:
     type: http
     behavior: domain
@@ -115,7 +108,6 @@ rule-providers:
     path: ./ruleset/loyalsoldier/gfw.yaml
     interval: 86400
 
-  # Telegram CIDR
   telegramcidr:
     type: http
     behavior: ipcidr
@@ -124,7 +116,6 @@ rule-providers:
     path: ./ruleset/loyalsoldier/telegramcidr.yaml
     interval: 86400
 
-  # Google services
   google:
     type: http
     behavior: domain
@@ -134,19 +125,16 @@ rule-providers:
     interval: 86400
 
 # ═══════════════════════════════════════════════════════════════════════
-# RULES — по порядку, первое совпадение побеждает
+# RULES
 # ═══════════════════════════════════════════════════════════════════════
 rules:
-  # ─── Локалка/системные ───
   - RULE-SET,private,DIRECT
   - RULE-SET,lancidr,DIRECT
   - GEOIP,LAN,DIRECT
 
-  # ─── Реклама → в чёрный ящик ───
   - RULE-SET,reject,🛡 Блок
 
-  # ─── RU-инфра (банки/госуслуги/маркетплейсы) — напрямую ───
-  # Банки
+  # RU-инфра — напрямую
   - DOMAIN-SUFFIX,sberbank.ru,DIRECT
   - DOMAIN-SUFFIX,sber.ru,DIRECT
   - DOMAIN-SUFFIX,tinkoff.ru,DIRECT
@@ -159,13 +147,11 @@ rules:
   - DOMAIN-SUFFIX,rosbank.ru,DIRECT
   - DOMAIN-SUFFIX,mkb.ru,DIRECT
   - DOMAIN-SUFFIX,open.ru,DIRECT
-  # Госуслуги/налоги
   - DOMAIN-SUFFIX,gosuslugi.ru,DIRECT
   - DOMAIN-SUFFIX,nalog.gov.ru,DIRECT
   - DOMAIN-SUFFIX,nalog.ru,DIRECT
   - DOMAIN-SUFFIX,mos.ru,DIRECT
   - DOMAIN-SUFFIX,gov.ru,DIRECT
-  # Маркетплейсы/доставки
   - DOMAIN-SUFFIX,wildberries.ru,DIRECT
   - DOMAIN-SUFFIX,wb.ru,DIRECT
   - DOMAIN-SUFFIX,ozon.ru,DIRECT
@@ -180,7 +166,6 @@ rules:
   - DOMAIN-SUFFIX,dns-shop.ru,DIRECT
   - DOMAIN-SUFFIX,mvideo.ru,DIRECT
   - DOMAIN-SUFFIX,eldorado.ru,DIRECT
-  # Yandex / VK / Mail.ru
   - DOMAIN-SUFFIX,yandex.ru,DIRECT
   - DOMAIN-SUFFIX,yandex.net,DIRECT
   - DOMAIN-SUFFIX,yandex.com,DIRECT
@@ -192,14 +177,12 @@ rules:
   - DOMAIN-SUFFIX,vkuserlive.com,DIRECT
   - DOMAIN-SUFFIX,mail.ru,DIRECT
   - DOMAIN-SUFFIX,my.com,DIRECT
-  # Карты/погода/транспорт
   - DOMAIN-SUFFIX,2gis.ru,DIRECT
   - DOMAIN-SUFFIX,2gis.com,DIRECT
   - DOMAIN-SUFFIX,gismeteo.ru,DIRECT
   - DOMAIN-SUFFIX,rzd.ru,DIRECT
   - DOMAIN-SUFFIX,aeroflot.ru,DIRECT
   - DOMAIN-SUFFIX,pochta.ru,DIRECT
-  # RU-стриминги
   - DOMAIN-SUFFIX,kion.ru,DIRECT
   - DOMAIN-SUFFIX,ivi.ru,DIRECT
   - DOMAIN-SUFFIX,okko.tv,DIRECT
@@ -207,14 +190,11 @@ rules:
   - DOMAIN-SUFFIX,premier.one,DIRECT
   - DOMAIN-SUFFIX,start.ru,DIRECT
 
-  # ─── Россия по GeoIP — fallback ───
   - GEOIP,RU,DIRECT
 
-  # ─── Известные блочные/нужные — через ротонду ───
   - RULE-SET,gfw,🌐 Главная
   - RULE-SET,proxy-list,🌐 Главная
   - RULE-SET,telegramcidr,🌐 Главная
   - RULE-SET,google,🌐 Главная
 
-  # ─── Всё остальное — через ротонду ───
   - MATCH,🌐 Главная
