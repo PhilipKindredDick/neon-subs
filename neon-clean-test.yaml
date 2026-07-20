@@ -1,7 +1,5 @@
-# neon-clean-test: минимальный VLESS+Reality профиль для изоляции проблемы Reality auth
-# Ничего лишнего — только прокси и MATCH. Без DNS, без rule-providers, без fake-ip.
-# Если ЭТОТ работает, а neon-proxy-one.yaml нет — виновата какая-то фича из полного профиля.
-# Если и этот падает — совместимость Reality (mihomo <-> xray-core) или DPI на SNI.
+# neon-clean-test v2: минимальный VLESS+Reality профиль
+# Plan A — SNI изменён с www.microsoft.com на www.icloud.com
 # Пинг & Лейн, 20.07.2026
 
 mixed-port: 7890
@@ -20,7 +18,7 @@ proxies:
     udp: false
     tls: true
     flow: xtls-rprx-vision
-    servername: www.microsoft.com
+    servername: www.icloud.com
     client-fingerprint: chrome
     reality-opts:
       public-key: 1Ft_BCjUX8mvTZvdZXPgcUCipjNXVjzUnWfi9WjTLl8
