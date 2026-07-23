@@ -1,15 +1,18 @@
 # ╔════════════════════════════════════════════════════════════════════╗
-# ║  neon-proxy-one — NETRUNNER EDITION v3                             ║
-# ║  Clash Verge / Mihomo profile • VLESS + Reality к GCP us-central1  ║
-# ║                                                                    ║
-# ║  Рулсеты от Loyalsoldier (GPL-3.0) — обновляются раз в сутки       ║
-# ║  Реклама/трекеры → REJECT                                          ║
-# ║  RU-инфра (банки/госуслуги/маркетплейсы) → DIRECT                  ║
-# ║  Всё остальное → через ротонду                                     ║
-# ║                                                                    ║
-# ║  ✨ Лейн & Пинг для бро • v3 fix SNI 20.07.2026                    ║
-# ║  v3: SNI microsoft -> icloud (уходим из-под возможного DPI)        ║
-# ║  v2: rule-providers .yaml -> .txt через jsdelivr                   ║
+# ║  neon-proxy-one — NETRUNNER EDITION v4 (АМНЕЗИЯ)                    ║
+# ║  Clash Verge / Mihomo profile • VLESS + Reality + XHTTP             ║
+# ║                                                                     ║
+# ║  Транспорт: xhttp (обёртка HTTP/2 — DPI-невидимка)                  ║
+# ║  Fingerprint: random (каждый ClientHello уникальный)                ║
+# ║  SNI: www.mozilla.org (свежий, без DPI-истории)                     ║
+# ║                                                                     ║
+# ║  Рулсеты Loyalsoldier через jsdelivr CDN                            ║
+# ║  RU-инфра → DIRECT, реклама → REJECT, всё остальное → ротонда       ║
+# ║                                                                     ║
+# ║  ✨ Лейн & Пинг для бро • v4 амнезия 23.07.2026                     ║
+# ║  v4: xhttp transport + random fp + mozilla SNI (Plan C)             ║
+# ║  v3: SNI microsoft -> icloud                                        ║
+# ║  v2: rule-providers .yaml -> .txt через jsdelivr                    ║
 # ╚════════════════════════════════════════════════════════════════════╝
 
 mixed-port: 7890
@@ -41,15 +44,16 @@ proxies:
     server: 34.55.223.211
     port: 443
     uuid: 304c51f8-5e21-4eea-bdc0-4ebeb6cb811d
-    network: tcp
-    udp: false
+    network: xhttp
     tls: true
-    flow: xtls-rprx-vision
-    servername: www.icloud.com
-    client-fingerprint: chrome
+    servername: www.mozilla.org
+    client-fingerprint: random
     reality-opts:
       public-key: 1Ft_BCjUX8mvTZvdZXPgcUCipjNXVjzUnWfi9WjTLl8
       short-id: ce5ca552f4edc872
+    xhttp-opts:
+      path: "/"
+      mode: "auto"
 
 proxy-groups:
   - name: "🌐 Главная"
