@@ -1,5 +1,5 @@
 # ╔════════════════════════════════════════════════════════════════════╗
-# ║  neon-proxy-one — NETRUNNER EDITION v4 (АМНЕЗИЯ)                    ║
+# ║  neon-proxy-one — NETRUNNER EDITION v5                              ║
 # ║  Clash Verge / Mihomo profile • VLESS + Reality + XHTTP             ║
 # ║                                                                     ║
 # ║  Транспорт: xhttp (обёртка HTTP/2 — DPI-невидимка)                  ║
@@ -9,10 +9,11 @@
 # ║  Рулсеты Loyalsoldier через jsdelivr CDN                            ║
 # ║  RU-инфра → DIRECT, реклама → REJECT, всё остальное → ротонда       ║
 # ║                                                                     ║
-# ║  ✨ Лейн & Пинг для бро • v4 амнезия 23.07.2026                     ║
-# ║  v4: xhttp transport + random fp + mozilla SNI (Plan C)             ║
-# ║  v3: SNI microsoft -> icloud                                        ║
-# ║  v2: rule-providers .yaml -> .txt через jsdelivr                    ║
+# ║  ✨ Лейн & Пинг для бро                                             ║
+# ║  v5: IP-миграция 34.55.223.211 → 34.55.45.96 (01.08.2026)           ║
+# ║  v4: xhttp transport + random fp + mozilla SNI (23.07.2026)         ║
+# ║  v3: SNI microsoft → icloud (20.07.2026)                            ║
+# ║  v2: rule-providers .yaml → .txt через jsdelivr (20.07.2026)        ║
 # ╚════════════════════════════════════════════════════════════════════╝
 
 mixed-port: 7890
@@ -41,7 +42,7 @@ dns:
 proxies:
   - name: "neon-proxy-one"
     type: vless
-    server: 34.55.223.211
+    server: 34.55.45.96
     port: 443
     uuid: 304c51f8-5e21-4eea-bdc0-4ebeb6cb811d
     network: xhttp
