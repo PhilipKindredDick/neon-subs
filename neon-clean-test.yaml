@@ -1,6 +1,6 @@
-# neon-clean-test v3 — АМНЕЗИЯ (xhttp + random + mozilla)
+# neon-clean-test v4 — IP-migration (01.08.2026)
 # Минимальный VLESS+Reality+XHTTP профиль для изоляции проблем.
-# Пинг & Лейн, 23.07.2026
+# Пинг & Лейн
 
 mixed-port: 7890
 mode: rule
@@ -11,7 +11,7 @@ ipv6: false
 proxies:
   - name: "neon-clean"
     type: vless
-    server: 34.55.223.211
+    server: 34.55.45.96
     port: 443
     uuid: 304c51f8-5e21-4eea-bdc0-4ebeb6cb811d
     network: xhttp
