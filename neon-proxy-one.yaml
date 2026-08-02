@@ -1,16 +1,18 @@
 # ╔════════════════════════════════════════════════════════════════════╗
-# ║  neon-proxy-one — NETRUNNER EDITION v5                              ║
+# ║  neon-proxy-one — NETRUNNER EDITION v6                              ║
 # ║  Clash Verge / Mihomo profile • VLESS + Reality + XHTTP             ║
 # ║                                                                     ║
 # ║  Транспорт: xhttp (обёртка HTTP/2 — DPI-невидимка)                  ║
 # ║  Fingerprint: random (каждый ClientHello уникальный)                ║
-# ║  SNI: www.mozilla.org (свежий, без DPI-истории)                     ║
+# ║  SNI: www.clearblade.com (найден RealiTLScanner'ом в нашем /24,     ║
+# ║       IoT-платформа, wildcard cert от DigiCert, ~1мс fallback)      ║
 # ║                                                                     ║
 # ║  Рулсеты Loyalsoldier через jsdelivr CDN                            ║
 # ║  RU-инфра → DIRECT, реклама → REJECT, всё остальное → ротонда       ║
 # ║                                                                     ║
 # ║  ✨ Лейн & Пинг для бро                                             ║
-# ║  v5: IP-миграция 34.55.223.211 → 34.55.45.96 (01.08.2026)           ║
+# ║  v6: SNI mozilla → clearblade (найден скана /24, 01.08.2026)        ║
+# ║  v5: IP 34.55.223.211 → 34.55.45.96 (01.08.2026)                    ║
 # ║  v4: xhttp transport + random fp + mozilla SNI (23.07.2026)         ║
 # ║  v3: SNI microsoft → icloud (20.07.2026)                            ║
 # ║  v2: rule-providers .yaml → .txt через jsdelivr (20.07.2026)        ║
@@ -47,7 +49,7 @@ proxies:
     uuid: 304c51f8-5e21-4eea-bdc0-4ebeb6cb811d
     network: xhttp
     tls: true
-    servername: www.mozilla.org
+    servername: www.clearblade.com
     client-fingerprint: random
     reality-opts:
       public-key: 1Ft_BCjUX8mvTZvdZXPgcUCipjNXVjzUnWfi9WjTLl8
