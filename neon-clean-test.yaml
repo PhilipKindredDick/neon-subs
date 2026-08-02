@@ -1,4 +1,4 @@
-# neon-clean-test v4 — IP-migration (01.08.2026)
+# neon-clean-test v5 — SNI clearblade (01.08.2026)
 # Минимальный VLESS+Reality+XHTTP профиль для изоляции проблем.
 # Пинг & Лейн
 
@@ -16,7 +16,7 @@ proxies:
     uuid: 304c51f8-5e21-4eea-bdc0-4ebeb6cb811d
     network: xhttp
     tls: true
-    servername: www.mozilla.org
+    servername: www.clearblade.com
     client-fingerprint: random
     reality-opts:
       public-key: 1Ft_BCjUX8mvTZvdZXPgcUCipjNXVjzUnWfi9WjTLl8
